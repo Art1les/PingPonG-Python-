@@ -1,7 +1,7 @@
 import pygame
 import time
 
-back = (255, 182, 193) #фон
+back = (47, 79, 79) #фон
 win_width = 600
 win_height = 500
 window = pygame.display.set_mode((win_width, win_height))
@@ -38,36 +38,43 @@ class Player(GameSprite):
         if keys[pygame.K_s] and self.rect.y < win_height - 210:
             self.rect.y += self.speed
 
-racket1 = Player('pngegg.png', 10, 100, 30, 300, 15)
-racket2 = Player('pngegg.png', win_width-40, 100, 30, 300, 15)
+player1 = Player('L_wall.png', 10, 100, 30, 300, 15)
+player2 = Player('R_wall2.png', win_width-40, 100, 30, 300, 15)
 ball = GameSprite('ball.png', 280, 200, 40, 40, 4) 
 
 dx = 3
 dy = 3
 
 pygame.font.init()
-font = pygame.font.Font(None, 35)
-lose1 = font.render('PLAYER 1 LOSE!', True, (180, 0, 0))
-lose2 = font.render('PLAYER 2 LOSE!', True, (180, 0, 0))
+font = pygame.font.Font(None, 40)
+win2 = font.render('PLAYER 2 WIN!', True, (0, 255, 0))
+win1 = font.render('PLAYER 1 WIN!', True, (0, 255, 0))
 
 score_left = 0 
 score_right = 0
 
 while game:
+    time_start = time.time()
+
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             game = False
 
     if finish != True:
         window.fill(back)
-        racket1.update_l()
-        racket2.update_r()
+        player1.update_l()
+        player2.update_r()
         
         
         ball.rect.x += dx 
         ball.rect.y += dy 
-        if pygame.sprite.collide_rect(racket1, ball) or pygame.sprite.collide_rect(racket2, ball): 
-            dx *= -1     
+
+        time_end = time.time()
+        res = time_end-time_start
+        if pygame.sprite.collide_rect(player1, ball)  or pygame.sprite.collide_rect(player2, ball): 
+            dx *= -1  
+
+
 
         if ball.rect.y < 0 or ball.rect.y > win_height-40: 
             dy *= -1    
@@ -77,7 +84,8 @@ while game:
             ball.rect.x = 280
             ball.rect.y = 200
             time.sleep(0.1)
-            
+            if dx > 0:
+                dx *= -1           
 
         
         if ball.rect.x > win_width:
@@ -85,9 +93,11 @@ while game:
             ball.rect.x = 280
             ball.rect.y = 200
             time.sleep(0.1)
+            if dx < 0:
+                dx *= -1  
 
-        racket1.reset()
-        racket2.reset()
+        player1.reset()
+        player2.reset()
 
         ball.reset() 
 
@@ -98,11 +108,12 @@ while game:
 
         if score_right >= 5:
             finish = True
-            window.blit(lose1, (200, 200))
+            window.blit(win2, (200, 200))
+
 
         if score_left >= 5:
             finish = True
-            window.blit(lose2, (200, 200))
+            window.blit(win1, (200, 200))
 
 
     pygame.display.update()
